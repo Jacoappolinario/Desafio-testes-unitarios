@@ -1,6 +1,7 @@
 import { AppError } from "../../../../shared/errors/AppError";
 import { InMemoryUsersRepository } from "../../repositories/in-memory/InMemoryUsersRepository";
 import { CreateUserUseCase } from "./CreateUserUseCase";
+import { ICreateUserDTO } from "./ICreateUserDTO";
 
 let createUserUseCase: CreateUserUseCase;
 let inMemoryUsersRepository: InMemoryUsersRepository;
@@ -12,7 +13,7 @@ describe("Create User", () => {
   })
 
   it('Should be able to create a new user', async () => {
-    const user = {
+    const user: ICreateUserDTO = {
       name: 'Teste',
       email: 'teste@teste.com.br',
       password: '12345'
@@ -32,7 +33,7 @@ describe("Create User", () => {
 
   it('Should not be able to create a new user with email exists', async () => {
     expect(async () => {
-      const user = {
+      const user: ICreateUserDTO = {
         name: 'Teste',
         email: 'teste@teste.com.br',
         password: '12345'

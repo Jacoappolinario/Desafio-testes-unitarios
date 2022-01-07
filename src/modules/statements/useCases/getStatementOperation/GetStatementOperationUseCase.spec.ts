@@ -5,26 +5,26 @@ import { ICreateUserDTO } from "../../../users/useCases/createUser/ICreateUserDT
 import { InMemoryStatementsRepository } from "../../repositories/in-memory/InMemoryStatementsRepository";
 import { OperationType } from "../createStatement/CreateStatementController";
 import { CreateStatementUseCase } from "../createStatement/CreateStatementUseCase";
-import { GetBalanceUseCase } from "./GetBalanceUseCase";
+import { GetStatementOperationUseCase } from "./GetStatementOperationUseCase";
 
 let inMemoryUsersRepository: InMemoryUsersRepository;
 let createUserUseCase: CreateUserUseCase;
 let authenticateUserUseCase: AuthenticateUserUseCase;
 let inMemoryStatementsRepository: InMemoryStatementsRepository;
 let createStatementUseCase: CreateStatementUseCase;
-let getBalanceUseCase: GetBalanceUseCase;
+let getStatementOperationUseCase: GetStatementOperationUseCase;
 
-describe('Balance Statements', () => {
+describe('Statement Operation', () => {
   beforeEach(() => {
     inMemoryUsersRepository = new InMemoryUsersRepository();
     createUserUseCase = new CreateUserUseCase(inMemoryUsersRepository);
     authenticateUserUseCase = new AuthenticateUserUseCase(inMemoryUsersRepository);
-    inMemoryStatementsRepository = new InMemoryStatementsRepository()
-    createStatementUseCase = new CreateStatementUseCase(inMemoryUsersRepository,inMemoryStatementsRepository)
-    getBalanceUseCase = new GetBalanceUseCase(inMemoryStatementsRepository, inMemoryUsersRepository)
+    inMemoryStatementsRepository = new InMemoryStatementsRepository();
+    createStatementUseCase = new CreateStatementUseCase(inMemoryUsersRepository, inMemoryStatementsRepository);
+    getStatementOperationUseCase = new GetStatementOperationUseCase(inMemoryUsersRepository, inMemoryStatementsRepository);
   });
 
-  it('Should be able to list all user deposit and withdrawal operations', async () => {
+  it ('Should be able to list user operation register', async () => {
     const user: ICreateUserDTO = {
       name: 'Teste',
       email: 'teste@teste.com.br',
@@ -40,26 +40,17 @@ describe('Balance Statements', () => {
 
     const user_id = authentication.user.id as string;
 
-    await createStatementUseCase.execute({
+    const statement = await createStatementUseCase.execute({
       user_id,
       type: 'deposit' as OperationType,
       amount: 3600.00,
       description: 'deposit'
     });
 
-    await createStatementUseCase.execute({
-      user_id,
-      type: 'withdraw' as OperationType,
-      amount: 50.00,
-      description: 'withdraw'
+    const statement_id = statement.id as string
 
-    })
+    const getStatementOperation = await getStatementOperationUseCase.execute({user_id, statement_id})
 
-    const getBalance = await getBalanceUseCase.execute({user_id});
-
-    expect(getBalance).toHaveProperty('balance');
-    expect(getBalance.statement).toHaveLength(2)
-  })
+    expect(getStatementOperation).toHaveProperty('id')
+  });
 });
-
-

@@ -44,7 +44,7 @@ export class CreateTransferUseCase {
       user_id: sender_id,
       amount,
       description,
-      type: OperationType.TRANSFER
+      type: OperationType.WITHDRAW
     })
 
     const transferOperation = await this.statementsRepository.create({
